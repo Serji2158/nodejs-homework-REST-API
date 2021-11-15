@@ -50,7 +50,7 @@ router.put('/:contactId', contactValidation, async (req, res, next) => {
     if (!updatedContact) {
       return res.status(404).json({ message: 'Sorry, no such contact found!' })
     }
-    res.status(200).json(updatedContact)
+    res.status(200).json({ message: 'Contact is updated' })
   } catch (error) {
     next(error)
   }

@@ -14,24 +14,22 @@ const listContacts = async () => {
     console.log(error.message)
   }
 }
-console.log(listContacts)
 
 const getContactById = async (contactId) => {
   try {
     const contacts = await listContacts()
-    const result = await contacts.find(
-      (contact) => contact.id.toString() === contactId.toString()
-    )
+    const result = await contacts.find((contact) => {
+      return contact.id.toString() === contactId.toString()
+    })
     return result
   } catch (error) {
-    console.log(error.message)
+    console.log(error)
   }
 }
 
 const removeContact = async (contactId) => {
   try {
     const contacts = await listContacts()
-    // console.log(contacts);
     const changedListContacts = await contacts.filter(
       (contact) => contact.id.toString() !== contactId.toString()
     )
@@ -53,16 +51,18 @@ const addContact = async (name, email, phone) => {
 async function updateContact(contactId, name, email, phone) {
   try {
     const contacts = await listContacts()
-    const updateContact = contacts.forEach((contact) => {
-      if (contact.id === contactId) {
+    const updateContact = contacts.filter((contact) => {
+      if (contact.id.toString() === contactId.toString()) {
         contact.name = name
         contact.email = email
         contact.phone = phone
       }
     })
-    contacts.push(updateContact)
-    // const updateContactList = JSON.stringify([...contacts, updateContact]);
-    await fs.writeFile(contactsPath, JSON.stringify(updateContact))
+    console.log(updateContact)
+    // contacts.push(updateContact);
+    // await fs.writeFile(contactsPath, JSON.stringify(contacts));
+    const updateContactList = JSON.stringify([...contacts])
+    await fs.writeFile(contactsPath, updateContactList)
     return updateContact
   } catch (error) {
     console.log(error.message)
