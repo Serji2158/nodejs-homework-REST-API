@@ -5,6 +5,7 @@ const contactValidation = (req, res, next) => {
     name: Joi.string(),
     email: Joi.string(),
     phone: Joi.string(),
+    favorite: Joi.boolean().truthy('Y'),
   }).min(1)
 
   const validationResult = schema.validate(req.body)
