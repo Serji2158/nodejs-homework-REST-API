@@ -15,4 +15,17 @@ const contactValidation = (req, res, next) => {
   next()
 }
 
-module.exports = { contactValidation }
+const userValidation = (req, res, next) => {
+  const schema = Joi.object({
+    email: Joi.string(),
+    password: Joi.string(),
+  })
+
+  const validationResult = schema.validate(req.body)
+  if (validationResult.error) {
+    return res.status(400).json({ status: validationResult.error.details })
+  }
+  next()
+}
+
+module.exports = { contactValidation, userValidation }
