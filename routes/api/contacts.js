@@ -1,28 +1,30 @@
 const express = require('express')
 const router = express.Router()
+const authorization = require('../../middlewares/authorization')
 
 const ctrlContact = require('../../controller')
 const {
   contactValidation,
 } = require('../../middlewares/validationMiddleware.js')
 
-router.get('/', ctrlContact.get)
+router.get('/', authorization, ctrlContact.get)
 
-router.get('/:contactId', ctrlContact.getById)
+router.get('/:contactId', authorization, ctrlContact.getById)
 
-router.post('/', contactValidation, ctrlContact.post)
+router.post('/', authorization, contactValidation, ctrlContact.post)
 
-router.put('/:contactId', contactValidation, ctrlContact.put)
+router.put('/:contactId', authorization, contactValidation, ctrlContact.put)
 
 router.patch(
   '/:contactId/favorite',
+  authorization,
   contactValidation,
   ctrlContact.updateStatus
 )
 
-router.delete('/:contactId', ctrlContact.remove)
+router.delete('/:contactId', authorization, ctrlContact.remove)
 
-module.exports = router
+module.exports = { contactsRouter: router }
 
 // router.get("/", async (req, res, next) => {
 //   try {

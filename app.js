@@ -1,23 +1,39 @@
 const express = require('express')
 const cors = require('cors')
 const logger = require('morgan')
+require('./config/config-passport')
+const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
+const { apiLimit, jsonLimit } = require('./config/api-limit.json')
 
 const app = express()
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
-app.use(express.json())
+app.use(express.json({ limit: jsonLimit }))
 app.use(logger(formatsLogger))
 app.use(cors())
+app.use(helmet())
 
-const contactsRouter = require('./routes/api/contacts')
+app.use(
+  '/api/',
+  rateLimit({
+    windowMs: apiLimit.windowMs,
+    max: apiLimit.max,
+  })
+)
+
+const { contactsRouter } = require('./routes/api/contacts')
+const { usersRouter } = require('./routes/api/auth')
+
 app.use('/api/contacts', contactsRouter)
+app.use('/api/users', usersRouter)
 
 app.use((req, res) => {
   res.status(404).json({
     status: 'error',
     code: 404,
-    message: 'Not found',
+    data: 'Not found',
   })
 })
 
