@@ -5,6 +5,7 @@ require('./config/config-passport')
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
 const { apiLimit, jsonLimit } = require('./config/api-limit.json')
+const path = require('path')
 
 const app = express()
 
@@ -28,6 +29,8 @@ const { usersRouter } = require('./routes/api/auth')
 
 app.use('/api/contacts', contactsRouter)
 app.use('/api/users', usersRouter)
+
+app.use(express.static(path.join(__dirname, 'public')))
 
 app.use((req, res) => {
   res.status(404).json({

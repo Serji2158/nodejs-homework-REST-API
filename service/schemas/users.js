@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const bCrypt = require('bcryptjs')
+const gravatar = require('gravatar')
 
 const userSchema = new mongoose.Schema({
   password: {
@@ -22,6 +23,16 @@ const userSchema = new mongoose.Schema({
     default: 'starter',
   },
   token: {
+    type: String,
+    default: null,
+  },
+  avatar: {
+    type: String,
+    default: function () {
+      return gravatar.url(this.email, { s: '250' }, true)
+    },
+  },
+  idUserCloud: {
     type: String,
     default: null,
   },

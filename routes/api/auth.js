@@ -1,13 +1,15 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
-const passport = require('passport')
 const User = require('../../service/schemas/users')
 // const userValidation = require("../../middlewares/validationMiddleware");
 require('dotenv').config()
 const secret = process.env.SECRET
 // const { limiter } = require("../../helpers/rate-limit-login");
+
 const authorization = require('../../middlewares/authorization')
+const upload = require('../../helpers/uploads')
+const { uploadAvatar } = require('../../controller/users')
 
 router.post('/login', async (req, res, next) => {
   const { email, password } = req.body
@@ -57,6 +59,7 @@ router.post('/signup', async (req, res, next) => {
         message: 'Registration successful',
         email: newUser.email,
         subscription: newUser.subscription,
+        avatar: newUser.avatar,
       },
     })
   } catch (error) {
@@ -81,5 +84,7 @@ router.get('/logout', authorization, async (req, res, __) => {
   await User.findByIdAndUpdate(id, null)
   return res.status(204).json({})
 })
+
+router.patch('/avatars', authorization, upload.single('avatar'), uploadAvatar)
 
 module.exports = { usersRouter: router }
