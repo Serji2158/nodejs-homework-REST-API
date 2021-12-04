@@ -6,10 +6,14 @@ const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
 const { apiLimit, jsonLimit } = require('./config/api-limit.json')
 const path = require('path')
-
+const { ErrorHandler } = require('./helpers/errorHandler')
+const { HttpCode } = require('./helpers/constants')
 const app = express()
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
+
+const { contactsRouter } = require('./routes/api/contacts')
+const { usersRouter } = require('./routes/userAuth')
 
 app.use(express.json({ limit: jsonLimit }))
 app.use(logger(formatsLogger))
@@ -21,11 +25,16 @@ app.use(
   rateLimit({
     windowMs: apiLimit.windowMs,
     max: apiLimit.max,
+    handler: (req, res, next) => {
+      next(
+        new ErrorHandler(
+          HttpCode.BAD_REQUEST,
+          'Вы исчерпали количество запросов'
+        )
+      )
+    },
   })
 )
-
-const { contactsRouter } = require('./routes/api/contacts')
-const { usersRouter } = require('./routes/api/auth')
 
 app.use('/api/contacts', contactsRouter)
 app.use('/api/users', usersRouter)
@@ -33,17 +42,17 @@ app.use('/api/users', usersRouter)
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use((req, res) => {
-  res.status(404).json({
+  res.status(HttpCode.NOT_FOUND).json({
     status: 'error',
-    code: 404,
+    code: HttpCode.NOT_FOUND,
     data: 'Not found',
   })
 })
 
 app.use((err, _, res, __) => {
-  res.status(500).json({
+  res.status(HttpCode.INTERNAL_SERVER_ERROR).json({
     status: 'fall',
-    code: 500,
+    code: HttpCode.INTERNAL_SERVER_ERROR,
     message: err.message,
     data: 'Internal Server Error',
   })
