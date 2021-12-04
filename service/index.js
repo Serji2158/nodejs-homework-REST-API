@@ -1,5 +1,8 @@
 const Contacts = require('./schemas/contacts.js')
 
+const AuthService = require('./auth')
+const UserService = require('./users')
+
 const getAllContacts = async (userId, query) => {
   const {
     sortBy,
@@ -72,4 +75,6 @@ module.exports = {
   updateContact,
   updateStatusContact,
   removeContact,
+  AuthService,
+  UserService,
 }
